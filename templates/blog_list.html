@@ -1,0 +1,144 @@
+{% extends "base.html" %}
+{% load static %}
+{% load blog_tag %}
+{% block content %}
+<main>
+        <section class="news__box">
+            <div class="wrapper">
+                <div class="news__box-inner">
+                        <div class="news__box-main">
+                        {% if author %}
+                        <div class="post__author">
+                            <div class="post__author_inner">
+                                <div class="post__author_left">
+                                    <div class="post__author_photo">
+                                        <img class="author_avatar_medium" src="{{ author.avatar.url }}" alt=""/>
+                                    </div>
+                                    <div class="post__author_social">
+                                        <a href="#" class="author__social_item"><i class="fa fa-instagram" aria-hidden="true"></i></a>
+                                        <a href="#" class="author__social_item"><i class="fa fa-facebook" aria-hidden="true"></i></a>
+                                        <a href="#" class="author__social_item"><i class="fa fa-youtube" aria-hidden="true"></i></a>
+                                    </div>
+                                </div>
+                                <div class="post__author_description">
+                                    <h3 class="post__author_name">{{ author.first_name }}</h3>
+                                    <p>
+                                        {{ author.biography }}
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                        {% endif %}
+                        <div class="news">
+                            {% for blog in blog_list %}
+                                <div class="news__item">
+                                <div class="news__item-inner">
+                                    <a href="{{ blog.get_absolute_url }}" class="news__item-img">
+                                        <img src="{{ blog.poster.url }}" alt=""/>
+                                    </a>
+                                    <div class="news__date-box">
+                                        <div class="news__date-inner">
+                                            <div class="news__date">{{ blog.date_added|date:"d" }}</div>
+                                            <div class="news__month">{{ blog.date_added|date:"M" }}</div>
+                                        </div>
+                                    </div>
+                                    <div class="news__item-category">
+                                        {% for category in blog.category.all %}
+                                            {{ category.title }}.
+                                        {% endfor %}
+                                    </div>
+                                </div>
+                                <div class="news__item-description">
+                                    <a href="{{ blog.get_absolute_url }}" class="news__item-title"><h2>{{ blog.title }}</h2></a>
+                                    <p class="news__item-text news__text">{{ blog.blog_text|truncatewords:90 }}</p>
+                                    <div class="news__item-btn">
+                                        <a href="{{ blog.get_absolute_url }}" class="btn__read-more">Read more</a>
+                                    </div>
+                                </div>
+                            </div>
+                            {% endfor %}
+
+                            <!-- pagination -->
+                            {% if page_obj %}
+                                <ul class="pagination">
+                                    {% if page_obj.has_previous %}
+                                        <li class="pagination__next"><a href="?{{ search_query }}page=1"><i class="fa fa-angle-left" aria-hidden="true"></i></a></li>
+                                        <li><a href="?{{ search_query }}page={{ page_obj.previous_page_number }}">{{ page_obj.previous_page_number }}</a></li>
+                                    {% endif %}
+                                    <li class="active"><a href="#">{{ page_obj.number }}</a></li>
+                                    {% if page_obj.has_next %}
+                                        <li><a href="?{{ search_query }}page={{ page_obj.next_page_number }}">{{ page_obj.next_page_number }}</a></li>
+                                        <li class="pagination__next"><a href="?{{ search_query }}page={{ page_obj.paginator.num_pages }}"><i class="fa fa-angle-right" aria-hidden="true"></i></a></li>
+                                    {% endif %}
+                                </ul>
+                            {% endif %}
+                            <!-- end pagination -->
+
+                        </div>
+                    </div>
+
+                    <aside class="news__sidebar">
+                        <div class="sidebar__inner">
+                            <div class="search_box sidebar__item">
+                                <h3 class="sidebar__title">Search blog</h3>
+                                <form action="{% url 'search' %}" method="get" class="search">
+                                    <input class="search__input" type="text" name="search_query" placseholder="Search...">
+                                    <button class="search__btn" type="submit"><i class="fa fa-search"></i></button>
+                                </form>
+                            </div>
+                            <div class="categories sidebar__item">
+                                <h3 class="sidebar__title">Categories</h3>
+                                <ul class="categories__inner">
+                                    {% get_blogs as all_blogs %}
+                                    <li><a href="{% url 'blog-list' %}">All<span class="category__count">({{ all_blogs.count }})</span></a></li>
+                                    {% get_categories as categories %}
+                                    {% for category in categories %}
+                                        <li><a href="{{ category.get_absolute_url }}">{{ category.title }}<span class="category__count">({{ category.blog_set.count }})</span></a></li>
+                                    {% endfor %}
+                                </ul>
+                            </div>
+                            <div class="popular__posts sidebar__item">
+                                <h3 class="sidebar__title">Popular posts</h3>
+                                {% get_popular as popular_blogs %}
+                                {% for popular in popular_blogs %}
+                                    <div class="popular__post-item">
+                                    <a class="link-image__post" href="{{ popular.get_absolute_url }}"><img class="image-post__cover" src="{{ popular.poster.url }}" alt=""></a>
+                                    <div class="popular__post-data-box">
+                                        <a href="{{ popular.get_absolute_url }}" class="popular__post-item-title"><h4>{{ popular.title }}</h4></a>
+                                        <div class="popular__post-data">{{ popular.date_added }} and {{ popular.visit_count__hits.count }}</div>
+                                    </div>
+                                </div>
+                                {% endfor %}
+                            </div>
+                            <div class="sidebar__photo-box sidebar__item">
+                                <h3 class="sidebar__title">Instagram</h3>
+                                <div class="sidebar__photo-inner">
+                                    <a href="https://www.instagram.com/" class="sidebar__photo-item"><img src="{% static 'img/blog/instagram/insta1.jpg' %}" alt=""></a>
+                                    <a href="https://www.instagram.com/" class="sidebar__photo-item"><img src="{% static 'img/blog/instagram/insta2.jpg' %}" alt=""></a>
+                                    <a href="https://www.instagram.com/" class="sidebar__photo-item"><img src="{% static 'img/blog/instagram/insta3.jpg' %}" alt=""></a>
+                                    <a href="https://www.instagram.com/" class="sidebar__photo-item"><img src="{% static 'img/blog/instagram/insta4.jpg' %}" alt=""></a>
+                                    <a href="https://www.instagram.com/" class="sidebar__photo-item"><img src="{% static 'img/blog/instagram/insta5.jpg' %}" alt=""></a>
+                                    <a href="https://www.instagram.com/" class="sidebar__photo-item"><img src="{% static 'img/blog/instagram/insta6.jpg' %}" alt=""></a>
+                                    <a href="https://www.instagram.com/" class="sidebar__photo-item"><img src="{% static 'img/blog/instagram/insta7.jpg' %}" alt=""></a>
+                                    <a href="https://www.instagram.com/" class="sidebar__photo-item"><img src="{% static 'img/blog/instagram/insta8.jpg' %}" alt=""></a>
+                                    <a href="https://www.instagram.com/" class="sidebar__photo-item"><img src="{% static 'img/blog/instagram/insta9.jpg' %}" alt=""></a>
+                                </div>
+                            </div>
+                            <div class="subscribe__box sidebar__item">
+                                <h3 class="sidebar__title">Subscribe</h3>
+                                <form method="post">
+                                    {% csrf_token %}
+                                    <div class="subscribe__email-box">
+                                        <input class="subscribe__email" name="email" type="text" placeholder="Email"/>
+                                        <input type="hidden" name="subscription" value="True">
+                                        <button class="subscribe__btn" type="submit"><i class="fa fa-envelope-o" aria-hidden="true"></i></button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </aside>
+                </div>
+            </div>
+        </section>
+    </main>
+{% endblock content %}

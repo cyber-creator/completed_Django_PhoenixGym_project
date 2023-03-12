@@ -1,0 +1,162 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load blog_tag %}
+{% block content %}
+    <main>
+        <section class="blog__single">
+            <div class="wrapper">
+                <div class="blog__single-inner">
+                    <div class="single__news-box">
+                        <div class="single__news">
+                            <div class="news__item-inner">
+                                <a href="#" class="news__item-img">
+                                    <img src="{{ blog_single.poster.url }}" alt=""/>
+                                </a>
+                                <div class="news__date-box">
+                                    <div class="news__date-inner">
+                                        <div class="news__date">{{ blog_single.date_added|date:"d" }}</div>
+                                        <div class="news__month">{{ blog_single.date_added|date:"M" }}</div>
+                                    </div>
+                                </div>
+                                <div class="news__item-category">
+                                    {% for category in blog_single.category.all %}
+                                            |&nbsp;{{ category.title }}&nbsp;|
+                                    {% endfor %}
+                                </div>
+                            </div>
+                            <div class="news__item-description">
+                                <a href="{{ blog_single.get_absolute_url }}" class="news__item-title"><h2>{{ blog_single.title }}</h2></a>
+                                <p class="news__item-text">
+                                    {{ blog_single.blog_text }}</p>
+                                <blockquote class="blog__quote">
+                                    <p>{{ blog_single.special_text }}</p>
+                                 </blockquote>
+                                <p class="news__item-text">{{ blog_single.blog_text_next }}</p>
+                                <div class="blog__video">
+                                    <div class="blog__video-inner">
+                                        <iframe width="560" height="315" src="{{ blog_single.youtube_link }}" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="share__news-box">
+                                <h3 class="share__news-title">Share this news</h3>
+                                <div class="share__news">
+                                    <a href="#" class="share__news-item"><i class="fa fa-facebook" aria-hidden="true"></i></a>
+                                    <a href="#" class="share__news-item"><i class="fa fa-twitter" aria-hidden="true"></i></a>
+                                    <a href="#" class="share__news-item"><i class="fa fa-instagram" aria-hidden="true"></i></a>
+                                </div>
+                            </div>
+                            <div class="post__author">
+                                <div class="post__author_inner">
+                                    <div class="post__author_left">
+                                        <div class="post__author_photo">
+                                            <img src="{{ blog_single.user.profile_coach.avatar.url }}" alt=""/>
+                                        </div>
+                                        <div class="post__author_social">
+                                            <a href="#" class="author__social_item"><i class="fa fa-instagram" aria-hidden="true"></i></a>
+                                            <a href="#" class="author__social_item"><i class="fa fa-facebook" aria-hidden="true"></i></a>
+                                            <a href="#" class="author__social_item"><i class="fa fa-youtube" aria-hidden="true"></i></a>
+                                        </div>
+                                    </div>
+                                    <div class="post__author_description">
+{#                                        <h3 class="post__author_name">Jane Smith</h3>#}
+                                            <h3 class="post__author_name">{{ blog_single.user.first_name }}</h3>
+                                        <p>
+                                            {{ blog_single.user.profile_coach.biography }}
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="related__news-box">
+                            <h3 class="related__news-title">Related news</h3>
+                            <div class="related__news">
+                                {% for recommended in may_like  %}
+                                    <div class="related__item">
+                                        <div class="related__item-inner">
+                                            <a href="{{ recommended.get_absolute_url }}" class="related__item-img">
+                                                <img src="{{ recommended.poster.url }}" alt=""/>
+                                            </a>
+                                            <div class="news__date-box">
+                                                <div class="news__date-inner">
+                                                    <div class="news__date">{{ recommended.date_added|date:"d" }}</div>
+                                                    <div class="news__month">{{ recommended.date_added|date:"M" }}</div>
+                                                </div>
+                                            </div>
+                                            <div class="news__item-category">
+                                                {% for category in recommended.category.all|slice:":3" %}
+                                                   {{ category.title }}
+                                                {% endfor %}
+                                            </div>
+                                        </div>
+                                        <a href="{{ recommended.get_absolute_url }}" class="related__item-title"><h4>{{ recommended.title }}</h4></a>
+                                    </div>
+                                {% endfor %}
+                            </div>
+                        </div>
+                    </div>
+                    <aside class="news__sidebar">
+                        <div class="sidebar__inner">
+                            <div class="search_box sidebar__item">
+                                <h3 class="sidebar__title">Search blog</h3>
+                                <form action="{% url 'search' %}" method="get" class="search">
+                                    <input class="search__input" type="text" name="search_query" placeholder="Search...">
+                                    <button class="search__btn" type="submit" name="submit"><i class="fa fa-search"></i></button>
+                                </form>
+                            </div>
+                            <div class="categories sidebar__item">
+                                <h3 class="sidebar__title">Categories</h3>
+                                <ul class="categories__inner">
+                                    {% get_blogs as all_blogs %}
+                                    <li><a href="{% url 'blog-list' %}">All<span class="category__count">({{ all_blogs.count }})</span></a></li>
+                                    {% get_categories as categories %}
+                                    {% for category in categories %}
+                                        <li><a href="{{ category.get_absolute_url }}">{{ category.title }}<span class="category__count">({{ category.blog_set.count }})</span></a></li>
+                                    {% endfor %}
+                                </ul>
+                            </div>
+                            <div class="popular__posts sidebar__item">
+                                <h3 class="sidebar__title">Popular posts</h3>
+                                {% get_popular as popular_blogs %}
+                                {% for popular in popular_blogs %}
+                                    <div class="popular__post-item">
+                                    <a href="{{ popular.get_absolute_url }}"><img src="img/blog/popular_news/popul_post_7.jpg" alt=""></a>
+                                    <div class="popular__post-data-box">
+                                        <a href="{{ popular.get_absolute_url }}" class="popular__post-item-title"><h4>{{ popular.title }}</h4></a>
+                                        <div class="popular__post-data">{{ popular.date_added }} and {{ popular.visit_count__hits.count }}</div>
+                                    </div>
+                                </div>
+                                {% endfor %}
+                            </div>
+                            <div class="sidebar__photo-box sidebar__item">
+                                <h3 class="sidebar__title">Instagram</h3>
+                                <div class="sidebar__photo-inner">
+                                    <a href="https://www.instagram.com/" class="sidebar__photo-item"><img src="{% static 'img/blog/instagram/insta1.jpg' %}" alt=""></a>
+                                    <a href="https://www.instagram.com/" class="sidebar__photo-item"><img src="{% static 'img/blog/instagram/insta2.jpg' %}" alt=""></a>
+                                    <a href="https://www.instagram.com/" class="sidebar__photo-item"><img src="{% static 'img/blog/instagram/insta3.jpg' %}" alt=""></a>
+                                    <a href="https://www.instagram.com/" class="sidebar__photo-item"><img src="{% static 'img/blog/instagram/insta4.jpg' %}" alt=""></a>
+                                    <a href="https://www.instagram.com/" class="sidebar__photo-item"><img src="{% static 'img/blog/instagram/insta5.jpg' %}" alt=""></a>
+                                    <a href="https://www.instagram.com/" class="sidebar__photo-item"><img src="{% static 'img/blog/instagram/insta6.jpg' %}" alt=""></a>
+                                    <a href="https://www.instagram.com/" class="sidebar__photo-item"><img src="{% static 'img/blog/instagram/insta7.jpg' %}" alt=""></a>
+                                    <a href="https://www.instagram.com/" class="sidebar__photo-item"><img src="{% static 'img/blog/instagram/insta8.jpg' %}" alt=""></a>
+                                    <a href="https://www.instagram.com/" class="sidebar__photo-item"><img src="{% static 'img/blog/instagram/insta9.jpg' %}" alt=""></a>
+                                </div>
+                            </div>
+                            <div class="subscribe__box sidebar__item">
+                                <h3 class="sidebar__title">Subscribe</h3>
+                                <form method="post">
+                                    {% csrf_token %}
+                                    <div class="subscribe__email-box">
+                                        <input class="subscribe__email" name="email" type="text" placeholder="Email"/>
+                                        <input type="hidden" name="subscription" value="True">
+                                        <button class="subscribe__btn" type="submit"><i class="fa fa-envelope-o" aria-hidden="true"></i></button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </aside>
+                </div>
+            </div>
+        </section>
+    </main>
+{% endblock content %}
